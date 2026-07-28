@@ -3,26 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weiterleitung...</title>
+    <title>Chilli Vanilli</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            padding: 20px;
+        }
+        a { color: #6366f1; }
+    </style>
     <script>
-        // ====================================================
-        // HIER DEINEN LINK EINTRAGEN:
-        // ====================================================
-        const TARGET_URL = "https://discord.gg/RXuxTj2ZaC";
+        async function checkAndRedirect() {
+            try {
+                // Lädt config.json live (Cache-Buster ?v= verhindert altes Caching)
+                const response = await fetch("config.json?v=" + Date.now());
+                const config = await response.json();
 
-        // Sofortige Weiterleitung ausführen
-        window.location.href = TARGET_URL;
+                const statusText = document.getElementById("status-text");
+                const redirectLink = document.getElementById("redirect-link");
 
-        // Fallback-Link aktualisieren, falls der automatischer Redirect blockiert wird
-        document.addEventListener("DOMContentLoaded", () => {
-            const fallbackLink = document.getElementById("redirect-link");
-            if (fallbackLink) {
-                fallbackLink.href = TARGET_URL;
+                // 1. Wenn Karte deaktiviert ist
+                if (!config.active) {
+                    statusText.innerText = config.pausedMessage || "Die Karte ist aktuell deaktiviert.";
+                    return;
+                }
+
+                // 2. Wenn Karte aktiv ist -> Weiterleitung
+                if (config.targetUrl) {
+                    redirectLink.href = config.targetUrl;
+                    window.location.href = config.targetUrl;
+                }
+            } catch (error) {
+                console.error("Fehler beim Laden:", error);
+                document.getElementById("status-text").innerText = "Fehler beim Laden der Konfiguration.";
             }
-        });
+        }
+
+        document.addEventListener("DOMContentLoaded", checkAndRedirect);
     </script>
 </head>
 <body>
-    <p>Du wirst weitergeleitet... Falls nichts passiert, <a id="redirect-link" href="#">klicke hier</a>.</p>
+    <p id="status-text">Weiterleitung wird geladen... Falls nichts passiert, <a id="redirect-link" href="#">klicke hier</a>.</p>
 </body>
 </html>
