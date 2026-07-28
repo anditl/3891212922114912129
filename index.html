@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weiterleitung...</title>
+    <script>
+        // ====================================================
+        // HIER DEINEN LINK EINTRAGEN:
+        // ====================================================
+        const TARGET_URL = "https://discord.gg/RXuxTj2ZaC";
+
+        // Sofortige Weiterleitung ausführen
+        window.location.href = TARGET_URL;
+
+        // Fallback-Link aktualisieren, falls der automatischer Redirect blockiert wird
+        document.addEventListener("DOMContentLoaded", () => {
+            const fallbackLink = document.getElementById("redirect-link");
+            if (fallbackLink) {
+                fallbackLink.href = TARGET_URL;
+            }
+        });
+    </script>
+</head>
+<body>
+    <p>Du wirst weitergeleitet... Falls nichts passiert, <a id="redirect-link" href="#">klicke hier</a>.</p>
+</body>
+</html>
