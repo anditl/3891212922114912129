@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chilli Vanilli</title>
+    <title>NFC Weiterleitung</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -15,41 +15,53 @@
             height: 100vh;
             margin: 0;
             text-align: center;
-            padding: 20px;
         }
-        a { color: #6366f1; }
+        .card {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 300px;
+        }
+        h2 { margin-top: 0; }
+        p { color: #94a3b8; }
     </style>
-    <script>
-        async function checkAndRedirect() {
-            try {
-                // Lädt config.json live (Cache-Buster ?v= verhindert altes Caching)
-                const response = await fetch("config.json?v=" + Date.now());
-                const config = await response.json();
-
-                const statusText = document.getElementById("status-text");
-                const redirectLink = document.getElementById("redirect-link");
-
-                // 1. Wenn Karte deaktiviert ist
-                if (!config.active) {
-                    statusText.innerText = config.pausedMessage || "Die Karte ist aktuell deaktiviert.";
-                    return;
-                }
-
-                // 2. Wenn Karte aktiv ist -> Weiterleitung
-                if (config.targetUrl) {
-                    redirectLink.href = config.targetUrl;
-                    window.location.href = config.targetUrl;
-                }
-            } catch (error) {
-                console.error("Fehler beim Laden:", error);
-                document.getElementById("status-text").innerText = "Fehler beim Laden der Konfiguration.";
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", checkAndRedirect);
-    </script>
 </head>
 <body>
-    <p id="status-text">Weiterleitung wird geladen... Falls nichts passiert, <a id="redirect-link" href="#">klicke hier</a>.</p>
+
+<div class="card">
+    <h2 id="title">⏳ Prüfe Status...</h2>
+    <p id="message">Bitte einen Moment gedulden.</p>
+</div>
+
+<script>
+    async function checkRedirect() {
+        try {
+            // Holt die config.json (mit Zeitstempel, damit kein Cache verwendet wird)
+            const response = await fetch('config.json?t=' + new Date().getTime());
+            
+            if (!response.ok) {
+                throw new Error("Config nicht gefunden");
+            }
+
+            const config = await response.json();
+
+            // Wenn aktiv = true: Sofort weiterleiten!
+            if (config.active && config.url) {
+                window.location.href = config.url;
+            } else {
+                // Wenn aktiv = false: Deaktiviert-Meldung anzeigen
+                document.getElementById('title').innerText = "🛑 Deaktiviert";
+                document.getElementById('message').innerText = "Diese Karte ist aktuell ausgeschaltet.";
+            }
+        } catch (error) {
+            document.getElementById('title').innerText = "❌ Fehler";
+            document.getElementById('message').innerText = "Konnte Konfiguration nicht laden.";
+        }
+    }
+
+    checkRedirect();
+</script>
+
 </body>
 </html>
