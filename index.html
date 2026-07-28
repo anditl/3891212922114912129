@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NFC Weiterleitung</title>
+    <title>NFC Redirect</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -30,33 +31,33 @@
 <body>
 
 <div class="card">
-    <h2 id="title">⏳ Prüfe Status...</h2>
-    <p id="message">Bitte einen Moment gedulden.</p>
+    <h2 id="title">⏳ Checking status...</h2>
+    <p id="message">Please wait a moment.</p>
 </div>
 
 <script>
     async function checkRedirect() {
         try {
-            // Holt die config.json (mit Zeitstempel, damit kein Cache verwendet wird)
+            // Fetch config.json with a timestamp to prevent caching
             const response = await fetch('config.json?t=' + new Date().getTime());
             
             if (!response.ok) {
-                throw new Error("Config nicht gefunden");
+                throw new Error("Config not found");
             }
 
             const config = await response.json();
 
-            // Wenn aktiv = true: Sofort weiterleiten!
+            // If active = true: Redirect immediately!
             if (config.active && config.url) {
                 window.location.href = config.url;
             } else {
-                // Wenn aktiv = false: Deaktiviert-Meldung anzeigen
-                document.getElementById('title').innerText = "🛑 Deaktiviert";
-                document.getElementById('message').innerText = "Diese Karte ist aktuell ausgeschaltet.";
+                // If active = false: Display disabled message
+                document.getElementById('title').innerText = "🛑 Disabled";
+                document.getElementById('message').innerText = "This card is currently turned off.";
             }
         } catch (error) {
-            document.getElementById('title').innerText = "❌ Fehler";
-            document.getElementById('message').innerText = "Konnte Konfiguration nicht laden.";
+            document.getElementById('title').innerText = "❌ Error";
+            document.getElementById('message').innerText = "Could not load configuration.";
         }
     }
 
